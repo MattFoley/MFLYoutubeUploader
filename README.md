@@ -1,7 +1,7 @@
 # MFLYoutubeUploader
 I wanted an incredibly simple class for uploading videos to Youtube. If you're like me, and all you want to do is upload a video to YT then YTDL is going to seem monolithic. No need to stress, Youtube uploading is actually incredibly simple.
 
-####Account Setup
+####Account Setup and Integration
 First you'll need to get registered with Google in order to make uploads. [Start here](https://console.developers.google.com/project)
 
 (https://cloud.google.com/console#/flows/enableapi?apiid=youtube)
@@ -55,11 +55,26 @@ First you'll need to get registered with Google in order to make uploads. [Start
   kYTClientSecret
 ```
 
-Soon: Manual Loading Indicator, or Automatic Loading Indicator?
+###Uploading
+
+Uploading is made with a single method call:
+
+```
+    [[MFLYoutubeUploader sharedInstance] uploadURLToYoutube:<File path URL to Video>
+                                                  withTitle:<Title for Video>
+                                                description:<Description to use for Video>
+                                                       tags:<Tags to use for YouTube>
+                                             viewController:<View Controller on which to present authorization flow>
+                                                 completion:^(BOOL success, NSError *err) {
+                                                 //Handle error or success here
+                                                 }];
+```
+
+###Soon to be added:
+
+- Loading Handler: Progress callback, and/or automatic progress indicator
 
   - TBD, there will be a progress callback, but there will also probably be automatic loading indicator management if you choose.
-
-5)
   
   
   
