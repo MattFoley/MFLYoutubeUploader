@@ -16,6 +16,13 @@
 @property (nonatomic, retain) GTLServiceYouTube *youtubeService;
 
 /**
+ *  Singleton, cause why not zoidberg?
+ *
+ *  @return Just use this for now, it'll be easier.
+ */
++ (MFLYoutubeUploader *)sharedInstance;
+
+/**
  *  Use this method to upload a video file to YouTube
  *
  *  @param fileURL     Local URL of video

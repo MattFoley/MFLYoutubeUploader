@@ -17,7 +17,33 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    NSURL *testVideoURL = [[NSBundle mainBundle] URLForResource:@"sample_iTunes"
+                                                  withExtension:@"mov"];
+    [[MFLYoutubeUploader sharedInstance] uploadURLToYoutube:testVideoURL
+                                                  withTitle:@"Testing MFLYoutubeUploader"
+                                                description:@"This is only a test."
+                                                       tags:nil
+                                             viewController:self
+                                                 completion:^(BOOL success, NSError *err) {
+                                                     if (success) {
+                                                         [[[UIAlertView alloc] initWithTitle:@"Yissssss!"
+                                                                                     message:@"It worked!"
+                                                                                    delegate:nil cancelButtonTitle:@"Okay"
+                                                                           otherButtonTitles:nil] show];
+                                                     } else {
+                                                         [[[UIAlertView alloc] initWithTitle:@"Error error"
+                                                                                     message:err.localizedDescription
+                                                                                    delegate:nil cancelButtonTitle:@"Okay"
+                                                                           otherButtonTitles:nil] show];
+                                                     }
+
+                                                 }];
 }
 
 - (void)didReceiveMemoryWarning {

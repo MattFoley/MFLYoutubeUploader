@@ -60,7 +60,8 @@
     self.videoDescription = description;
     self.tags = tags;
     self.completion = completion;
-
+    self.url = fileURL;
+    
     if (![self isAuthorized]) {
         [vc presentViewController:[self createAuthController] animated:YES completion:nil];
     } else {
@@ -118,9 +119,23 @@
     video.snippet = snippet;
     video.status = status;
 
-
+//My original project worked fine with FileURL, but building this example project I found "GTL_USE_SESSION_FETCHER" was set to 0 for the current build of Google Dev Library.
+#if GTL_USE_SESSION_FETCHER
     GTLUploadParameters *uploadParameters = [GTLUploadParameters uploadParametersWithFileURL:self.url
                                                                                     MIMEType:@"video/*"];
+#else
+    __autoreleasing NSError *err;
+    NSFileHandle *handle = [NSFileHandle fileHandleForReadingFromURL:self.url error:&err];
+    GTLUploadParameters *uploadParameters = [GTLUploadParameters uploadParametersWithFileHandle:handle
+                                                                                       MIMEType:@"video/*"];
+    if (err) {
+        if (self.completion) {
+            self.completion(NO, err);
+        }
+        return;
+    }
+#endif
+
     GTLQueryYouTube *query = [GTLQueryYouTube queryForVideosInsertWithObject:video
                                                                         part:@"snippet,status"
                                                             uploadParameters:uploadParameters];
@@ -146,7 +161,7 @@
                                      unsigned long long totalBytesWritten,
                                      unsigned long long totalBytesExpectedToWrite) {
 //TODO Update Loading Indicator here, or notify loading delegate
-        NSLog(@"Percent Uploaded %.2llu", (totalBytesWritten/totalBytesExpectedToWrite) * 100);
+        NSLog(@"Percent Uploaded %.2f", ((float)totalBytesWritten/(float)totalBytesExpectedToWrite) * 100);
     }];
 }
 
