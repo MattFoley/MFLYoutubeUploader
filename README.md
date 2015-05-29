@@ -21,7 +21,7 @@ First you'll need to get registered with Google in order to make uploads. [Start
 2) Integrate the Google Client Library
 
   - This library is quite large, and may be one of the more complicated steps you have to deal with.
-  - Download a read-only copy from [here]() or checkout via SVN
+  - Download a read-only copy via SVN. (Recommended you checkout in the same directory as your .xcproj file, for ease of Search Path setting)
 ```  
   svn checkout http://google-api-objectivec-client.googlecode.com/svn/trunk/ google-api-objectivec-client-read-only
 ```
@@ -36,9 +36,30 @@ First you'll need to get registered with Google in order to make uploads. [Start
     - "$(SRCROOT)/google-api-objectivec-client-read-only/Source/Objects"
     - "$(SRCROOT)/google-api-objectivec-client-read-only/Source/HTTPFetcher"
 
-3) Manual Loading Indicator, or Automatic Loading Indicator?
+3) You will then need to drag the following four files into your project:
+
+    - GTMOAuth2ViewTouch.xib
+    - GTLCommon_Sources.m (Mark as -fno-objc-arc in Build Phases)
+    - GTLNetworking_Sources.m (Mark as -fno-objc-arc in Build Phases)
+    - GTLYouTube_Sources.m
+    
+  These files can all be found inside the Google Client Library you've just checked out.  
+  
+    
+
+4) Next, drag the MFLYouTubeUploader folder into your project, including the Upload Constants folder.
+
+5) Using the values you obtained from the Google Developer Console earlier, set the values contained in MFLYoutubeConstants:
+```  
+  kYTClientID
+  kYTClientSecret
+```
+
+Soon: Manual Loading Indicator, or Automatic Loading Indicator?
 
   - TBD, there will be a progress callback, but there will also probably be automatic loading indicator management if you choose.
+
+5)
   
   
   
