@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-static NSString * const kYTClientID             = @"359861963905-ctfan8hnlmq7qmkgfdo5vjo3r3dr93hc.apps.googleusercontent.com";
-static NSString * const kYTClientSecret         = @"-S5CkkKDEypulhRAeHYcWhMg";
+static NSString * const kYTClientID             = @"<replace with your client id>";
+static NSString * const kYTClientSecret         = @"<replace with your secret>";
 static NSString * const kYTKeychainItemName     = @"UniqueKeychainItemName";
 
 //Currently not used.
