@@ -18,7 +18,7 @@
 @property NSArray *tags;
 @property NSURL *url;
 
-@property (nonatomic, copy) void (^completion)(BOOL success, NSError *err);
+@property (nonatomic, copy) void (^completion)(BOOL success, NSString *videoId, NSError *err);
 
 @end
 
@@ -54,7 +54,7 @@
                description:(NSString *)description
                       tags:(NSArray *)tags
             viewController:(UIViewController *)vc
-                completion:(void (^)(BOOL success, NSError *err))completion
+                completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion
 {
     self.title = title;
     self.videoDescription = description;
@@ -98,7 +98,7 @@
                           cancelButtonTitle:@"Okay"
                           otherButtonTitles:nil] show];
         self.youtubeService.authorizer = nil;
-        self.completion(NO, error);
+        self.completion(NO, nil, error);
     } else {
         self.youtubeService.authorizer = authResult;
         [self beginUploadingToYoutube];
@@ -130,7 +130,7 @@
                                                                                        MIMEType:@"video/*"];
     if (err) {
         if (self.completion) {
-            self.completion(NO, err);
+            self.completion(NO, nil, err);
         }
         return;
     }
@@ -148,11 +148,11 @@
 //TODO Dismiss Loading Indicator here, or notify loading delegate
                  if (!error) {
                      NSLog(@"File ID: %@", insertedVideo.identifier);
-                     self.completion(YES, nil);
+                     self.completion(YES, insertedVideo.identifier, nil);
                      return;
                  } else {
                      NSLog(@"An error occurred: %@", error);
-                     self.completion(NO, error);
+                     self.completion(NO, nil, error);
                      return;
                  }
              }];

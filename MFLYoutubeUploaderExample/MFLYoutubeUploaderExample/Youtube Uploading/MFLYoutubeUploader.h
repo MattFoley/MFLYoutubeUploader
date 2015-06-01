@@ -37,6 +37,6 @@
                description:(NSString *)description
                       tags:(NSArray *)tags
             viewController:(UIViewController *)vc
-                completion:(void (^)(BOOL success, NSError *err))completion;
+                completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion;
 
 @end
