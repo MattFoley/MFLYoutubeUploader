@@ -17,6 +17,7 @@
 @property NSString *videoDescription;
 @property NSArray *tags;
 @property NSURL *url;
+@property MFLFillableTextLoader *loader;
 
 @property (nonatomic, copy) void (^completion)(BOOL success, NSString *videoId, NSError *err);
 
@@ -54,6 +55,7 @@
                description:(NSString *)description
                       tags:(NSArray *)tags
             viewController:(UIViewController *)vc
+                    loader:(MFLFillableTextLoader *)loader
                 completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion
 {
     self.title = title;
@@ -61,12 +63,24 @@
     self.tags = tags;
     self.completion = completion;
     self.url = fileURL;
+    self.loader = loader;
     
     if (![self isAuthorized]) {
         [vc presentViewController:[self createAuthController] animated:YES completion:nil];
     } else {
         [self beginUploadingToYoutube];
     }
+
+
+    NSMutableParagraphStyle *para = [NSMutableParagraphStyle new];
+    [para setAlignment:NSTextAlignmentCenter];
+    NSAttributedString *details = [[NSAttributedString alloc] initWithString:@"Hyperdrives calibrating to YouTube..."
+                                                                  attributes:@{NSFontAttributeName : [UIFont fontWithName:@"Franklin Gothic Book" size:22],
+                                                                               NSForegroundColorAttributeName : UIColorFromRGB(0x4bd5ee),
+                                                                               NSParagraphStyleAttributeName : para}];
+    [self.loader setDetailText:details];
+
+    [self.loader setProgress:0];
 }
 
 - (BOOL)isAuthorized
@@ -91,18 +105,20 @@
 - (void)authViewController:(GTMOAuth2ViewControllerTouch *)viewController
           finishedWithAuth:(GTMOAuth2Authentication *)authResult
                      error:(NSError *)error {
-    if (error) {
-        [[[UIAlertView alloc] initWithTitle:@"Error"
-                                    message:error.localizedDescription
-                                   delegate:nil
-                          cancelButtonTitle:@"Okay"
-                          otherButtonTitles:nil] show];
-        self.youtubeService.authorizer = nil;
-        self.completion(NO, nil, error);
-    } else {
-        self.youtubeService.authorizer = authResult;
-        [self beginUploadingToYoutube];
-    }
+    [viewController dismissViewControllerAnimated:YES completion:^{
+        if (error) {
+            [[[UIAlertView alloc] initWithTitle:@"Error"
+                                        message:error.localizedDescription
+                                       delegate:nil
+                              cancelButtonTitle:@"Okay"
+                              otherButtonTitles:nil] show];
+            self.youtubeService.authorizer = nil;
+            self.completion(NO, nil, error);
+        } else {
+            self.youtubeService.authorizer = authResult;
+            [self beginUploadingToYoutube];
+        }
+    }];
 }
 
 - (void)beginUploadingToYoutube
@@ -140,12 +156,10 @@
                                                                         part:@"snippet,status"
                                                             uploadParameters:uploadParameters];
     GTLServiceTicket *ticket;
-//TODO Present Loading Indicator here, or notify loading delegate
     ticket = [self.youtubeService executeQuery:query
                             completionHandler:^(GTLServiceTicket *ticket,
                                                 GTLYouTubeVideo *insertedVideo, NSError *error)
              {
-//TODO Dismiss Loading Indicator here, or notify loading delegate
                  if (!error) {
                      NSLog(@"File ID: %@", insertedVideo.identifier);
                      self.completion(YES, insertedVideo.identifier, nil);
@@ -161,6 +175,7 @@
                                      unsigned long long totalBytesWritten,
                                      unsigned long long totalBytesExpectedToWrite) {
 //TODO Update Loading Indicator here, or notify loading delegate
+        [self.loader setProgress:((float)totalBytesWritten/(float)totalBytesExpectedToWrite)];
         NSLog(@"Percent Uploaded %.2f", ((float)totalBytesWritten/(float)totalBytesExpectedToWrite) * 100);
     }];
 }

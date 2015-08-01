@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "GTLYouTube.h"
+#import "MFLFillableTextLoader.h"
 
 @interface MFLYoutubeUploader : NSObject
 
@@ -37,6 +38,7 @@
                description:(NSString *)description
                       tags:(NSArray *)tags
             viewController:(UIViewController *)vc
+                    loader:(MFLFillableTextLoader *)loader
                 completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion;
 
 @end
