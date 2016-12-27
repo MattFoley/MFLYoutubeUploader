@@ -10,6 +10,8 @@
 #import "MFLYoutubeConstants.h"
 #import "GTMOAuth2ViewControllerTouch.h"
 #import "GTLYouTube.h"
+#import "CrawlMessagesKeyboardView.h"
+#import "UIAlertController+Blocks.h"
 
 @interface MFLYoutubeUploader ()
 
@@ -107,11 +109,19 @@
                      error:(NSError *)error {
     [viewController dismissViewControllerAnimated:YES completion:^{
         if (error) {
-            [[[UIAlertView alloc] initWithTitle:@"Error"
-                                        message:error.localizedDescription
-                                       delegate:nil
-                              cancelButtonTitle:@"Okay"
-                              otherButtonTitles:nil] show];
+            UIViewController *topController = [CrawlMessagesKeyboardView rootController];
+            while (topController.presentedViewController) {
+                topController = topController.presentedViewController;
+            }
+
+            [UIAlertController showAlertInViewController:topController
+                                               withTitle:@"Error"
+                                                 message:error.localizedDescription
+                                       cancelButtonTitle:@"Okay"
+                                  destructiveButtonTitle:nil
+                                       otherButtonTitles:nil
+                                                tapBlock:nil];
+
             self.youtubeService.authorizer = nil;
             self.completion(NO, nil, error);
         } else {
