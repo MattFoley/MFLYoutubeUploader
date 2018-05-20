@@ -8,23 +8,29 @@
 
 #import "MFLYoutubeUploader.h"
 #import "MFLYoutubeConstants.h"
+
 #import "GTLRYouTube.h"
-#ifdef CRAWL
-#import "CrawlMessagesKeyboardView.h"
-#import "UIAlertController+Blocks.h"
-#endif
+#import "GTMSessionFetcher.h"
+#import "GTMSessionFetcherService.h"
+#import <QuartzCore/QuartzCore.h>
+#import <AppAuth/AppAuth.h>
+#import <GTMAppAuth/GTMAppAuth.h>
+
+/*! The OIDC issuer from which the configuration will be discovered. (Always this I think?)
+ */
+static NSString *const kIssuer = @"https://accounts.google.com";
 
 @interface MFLYoutubeUploader ()
 
-@property NSString *title;
-@property NSString *videoDescription;
-@property NSArray *tags;
-@property NSURL *url;
-#ifdef CRAWL
-@property MFLFillableTextLoader *loader;
-#endif
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *videoDescription;
+@property (nonatomic, strong) NSArray *tags;
+@property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) GTLRYouTubeService *youTubeService;
+@property (nonatomic, weak) UIViewController *presentingVC;
 
 @property (nonatomic, copy) void (^completion)(BOOL success, NSString *videoId, NSError *err);
+@property (nonatomic, copy) void (^progress)(unsigned long long numberOfBytesRead, unsigned long long dataLength);
 
 @end
 
@@ -46,42 +52,42 @@
     self = [super init];
 
     if (self) {
-       
-       /*  _youtubeService.authorizer = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:kYTKeychainItemName
-                                                                                           clientID:kYTClientID
-                                                                                       clientSecret:kYTClientSecret];*/
+        self.youTubeService = [[GTLRYouTubeService alloc] init];
+        self.youTubeService.shouldFetchNextPages = YES;
+        self.youTubeService.retryEnabled = YES;
+        
+        GTMAppAuthFetcherAuthorization *authorization = [GTMAppAuthFetcherAuthorization authorizationFromKeychainForName:kYTKeychainItemName];
+        self.youTubeService.authorizer = authorization;
     }
 
     return self;
 }
 
-- (void)uploadURLToYoutube:(NSURL *)fileURL
-                 withTitle:(NSString *)title
-               description:(NSString *)description
-                      tags:(NSArray *)tags
-            viewController:(UIViewController *)vc
-#ifdef CRAWL
-                    loader:(MFLFillableTextLoader *)loader
-#endif
-                completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion
+- (void)uploadURLToYoutube:(NSURL *_Nonnull)fileURL
+                 withTitle:(NSString *_Nonnull)title
+               description:(NSString *_Nullable)description
+                      tags:(NSArray *_Nullable)tags
+            viewController:(UIViewController *_Nonnull)vc
+                  progress:(void (^_Nullable) (unsigned long long numberOfBytesRead, unsigned long long dataLength))progress
+                completion:(void (^_Nonnull)(BOOL success, NSString * _Nonnull videoId, NSError * _Nonnull err))completion
 {
     self.title = title;
     self.videoDescription = description;
     self.tags = tags;
     self.completion = completion;
     self.url = fileURL;
-#ifdef CRAWL
-    self.loader = loader;
-#endif
-    
+    self.presentingVC = vc;
+    self.progress = progress;
+
     if (![self isAuthorized]) {
         //Login first
-        //[vc presentViewController:[self createAuthController] animated:YES completion:nil];
+        [self loginToYoutube];
     } else {
         [self beginUploadingToYoutube];
     }
 
 #ifdef CRAWL
+    //Move into Progress Block in CrawlCreator
     NSMutableParagraphStyle *para = [NSMutableParagraphStyle new];
     [para setAlignment:NSTextAlignmentCenter];
     NSAttributedString *details = [[NSAttributedString alloc] initWithString:@"Hyperdrives calibrating to YouTube..."
@@ -96,84 +102,73 @@
 
 - (BOOL)isAuthorized
 {
-    return true;
-    // check login with new API
-    //return [((GTMOAuth2Authentication *)self.youtubeService.authorizer) canAuthorize];
+    //return false;
+    return self.youTubeService.authorizer.canAuthorize;
 }
 
-- (GTLRYouTubeService *)youTubeService
+- (void)loginToYoutube
 {
-    static GTLRYouTubeService *service;
+    NSLog(@"Initiate login flow");
+    NSURL *issuer = [NSURL URLWithString:kIssuer];
+    NSURL *redirectURI = [NSURL URLWithString:kYTRedirectURI];
     
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        service = [[GTLRYouTubeService alloc] init];
-        
-        // Have the service object set tickets to fetch consecutive pages
-        // of the feed so we do not need to manually fetch them.
-        service.shouldFetchNextPages = YES;
-        
-        // Have the service object set tickets to retry temporary error conditions
-        // automatically.
-        service.retryEnabled = YES;
-    });
-    return service;
+    // discovers endpoints
+    [OIDAuthorizationService
+     discoverServiceConfigurationForIssuer:issuer
+     completion:^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
+         NSLog(@"Login flow completed");
+         if (!configuration || error) {
+             NSLog(@"Login flow failed, abort");
+             if (!error) {
+                 error = [[NSError alloc] initWithDomain:NSCocoaErrorDomain
+                                                    code:404
+                                                userInfo:@{NSLocalizedDescriptionKey:@"Unable to setup authorization flow, check integration credentials"}];
+             }
+             self.completion(NO, nil, error);
+             return;
+         }
+         
+         // builds authentication request
+         OIDAuthorizationRequest *request =
+         [[OIDAuthorizationRequest alloc] initWithConfiguration:configuration
+                                                       clientId:kYTClientID
+                                                         scopes:@[OIDScopeOpenID, OIDScopeProfile, kGTLRAuthScopeYouTube, OIDScopeEmail]
+                                                    redirectURL:redirectURI
+                                                   responseType:OIDResponseTypeCode
+                                           additionalParameters:nil];
+         
+         // performs authentication request
+         
+         self.currentAuthorizationFlow =
+         [OIDAuthState authStateByPresentingAuthorizationRequest:request
+                                        presentingViewController:self.presentingVC
+                                                        callback:^(OIDAuthState *_Nullable authState,
+                                                                   NSError *_Nullable error) {
+                                                            if (authState) {
+                                                                NSLog(@"Auth completed, store, set and begin uploading: %i", authState.isAuthorized);
+                                                                GTMAppAuthFetcherAuthorization *authorization =
+                                                                [[GTMAppAuthFetcherAuthorization alloc] initWithAuthState:authState];
+                                                                [GTMAppAuthFetcherAuthorization saveAuthorization:authorization
+                                                                                                toKeychainForName:kYTKeychainItemName];
+                                                                self.youTubeService.authorizer = authorization;
+                                                                [self beginUploadingToYoutube];
+                                                            } else {
+                                                                [GTMAppAuthFetcherAuthorization removeAuthorizationFromKeychainForName:kYTKeychainItemName];
+                                                                NSLog(@"Failed to authorize");
+                                                                if (!error) {
+                                                                    error = [[NSError alloc] initWithDomain:NSCocoaErrorDomain
+                                                                                                       code:404
+                                                                                                   userInfo:@{NSLocalizedDescriptionKey:@"Unable to complete and/or present auth flow, please check integration"}];
+                                                                }
+                                                                self.completion(NO, nil, error);
+                                                            }
+                                                        }];
+     }];
 }
-
-
-/*
-- (GTMOAuth2ViewControllerTouch *)createAuthController
-{
-    GTMOAuth2ViewControllerTouch *authController;
-
-    authController = [[GTMOAuth2ViewControllerTouch alloc] initWithScope:kGTLAuthScopeYouTube
-                                                                clientID:kYTClientID
-                                                            clientSecret:kYTClientSecret
-                                                        keychainItemName:kYTKeychainItemName
-                                                                delegate:self
-                                                        finishedSelector:@selector(authViewController:finishedWithAuth:error:)];
-    return authController;
-}
- */
-
-/*
-- (void)authViewController:(GTMOAuth2ViewControllerTouch *)viewController
-          finishedWithAuth:(GTMOAuth2Authentication *)authResult
-                     error:(NSError *)error {
-    [viewController dismissViewControllerAnimated:YES completion:^{
-        if (error) {
-#ifdef SW_MESSAGES
-            UIViewController *topController = [CrawlMessagesKeyboardView rootController];
-            while (topController.presentedViewController) {
-                topController = topController.presentedViewController;
-            }
-#else
-            UIViewController *topController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-#endif
-            
-#ifdef CRAWL
-            [UIAlertController showAlertInViewController:topController
-                                               withTitle:@"Error"
-                                                 message:error.localizedDescription
-                                       cancelButtonTitle:@"Okay"
-                                  destructiveButtonTitle:nil
-                                       otherButtonTitles:nil
-                                                tapBlock:nil];
-#endif
-            self.youtubeService.authorizer = nil;
-            self.completion(NO, nil, error);
-        } else {
-            self.youtubeService.authorizer = authResult;
-            [self beginUploadingToYoutube];
-        }
-    }];
-}
-*/
 
 - (void)beginUploadingToYoutube
 {
-    
-    // Collect the metadata for the upload from the user interface.
+    NSLog(@"Begin uploading video");
     
     // Status.
     GTLRYouTube_VideoStatus *status = [GTLRYouTube_VideoStatus object];
@@ -199,12 +194,12 @@
     NSURL *fileToUploadURL = self.url;
     NSError *fileError;
     if (![fileToUploadURL checkPromisedItemIsReachableAndReturnError:&fileError]) {
+        NSLog(@"Failed to get file");
         self.completion(NO, nil, fileError);
         return;
     }
     
     // Get a file handle for the upload data.
-    NSString *filename = [fileToUploadURL lastPathComponent];
     GTLRUploadParameters *uploadParameters =
     [GTLRUploadParameters uploadParametersWithFileURL:fileToUploadURL
                                              MIMEType:@"video/*"];
@@ -218,85 +213,27 @@
     query.executionParameters.uploadProgressBlock = ^(GTLRServiceTicket *ticket,
                                                       unsigned long long numberOfBytesRead,
                                                       unsigned long long dataLength) {
-#ifdef CRAWL
-        [self.loader setProgress:((float)numberOfBytesRead/(float)dataLength)];
-#endif
+        if (self.progress) {
+            self.progress(numberOfBytesRead, dataLength);
+        }
         NSLog(@"Percent Uploaded %.2f", ((float)numberOfBytesRead/(float)dataLength) * 100);
     };
     
     GTLRYouTubeService *service = self.youTubeService;
-   /* _uploadFileTicket = [service executeQuery:query
+    [service executeQuery:query
                             completionHandler:^(GTLRServiceTicket *callbackTicket,
                                                 GTLRYouTube_Video *uploadedVideo,
                                                 NSError *callbackError) {
                                 // Callback
-                                _uploadFileTicket = nil;
+                                //_uploadFileTicket = nil;
                                 if (callbackError == nil) {
-                                    [self displayAlert:@"Uploaded"
-                                                format:@"Uploaded file \"%@\"",
-                                     uploadedVideo.snippet.title];
-                                    
-                                    if (_playlistPopup.selectedTag == kUploadsTag) {
-                                        // Refresh the displayed uploads playlist.
-                                        [self fetchSelectedPlaylist];
-                                    }
+                                    NSLog(@"Upload Success File ID: %@", uploadedVideo.identifier);
+                                    self.completion(YES, uploadedVideo.identifier, nil);
                                 } else {
-                                    [self displayAlert:@"Upload Failed"
-                                                format:@"%@", callbackError];
+                                    NSLog(@"An error occurred: %@", callbackError);
+                                    self.completion(NO, nil, callbackError);
                                 }
-                                
-                                _uploadProgressIndicator.doubleValue = 0.0;
-                                _uploadLocationURL = nil;
-                                [self updateUI];
                             }];
     
-    [self updateUI];*/
 }
-    /*
-
-//My original project worked fine with FileURL, but building this example project I found "GTL_USE_SESSION_FETCHER" was set to 0 for the current build of Google Dev Library.
-#if GTL_USE_SESSION_FETCHER
-    GTLUploadParameters *uploadParameters = [GTLUploadParameters uploadParametersWithFileURL:self.url
-                                                                                    MIMEType:@"video/*"];
-#else
-    __autoreleasing NSError *err;
-    NSFileHandle *handle = [NSFileHandle fileHandleForReadingFromURL:self.url error:&err];
-    GTLUploadParameters *uploadParameters = [GTLUploadParameters uploadParametersWithFileHandle:handle
-                                                                                       MIMEType:@"video/*"];
-    if (err) {
-        if (self.completion) {
-            self.completion(NO, nil, err);
-        }
-        return;
-    }
-#endif
-
-    GTLQueryYouTube *query = [GTLQueryYouTube queryForVideosInsertWithObject:video
-                                                                        part:@"snippet,status"
-                                                            uploadParameters:uploadParameters];
-    GTLServiceTicket *ticket;
-    ticket = [self.youtubeService executeQuery:query
-                            completionHandler:^(GTLServiceTicket *ticket,
-                                                GTLYouTubeVideo *insertedVideo, NSError *error)
-             {
-                 if (!error) {
-                     NSLog(@"File ID: %@", insertedVideo.identifier);
-                     self.completion(YES, insertedVideo.identifier, nil);
-                     return;
-                 } else {
-                     NSLog(@"An error occurred: %@", error);
-                     self.completion(NO, nil, error);
-                     return;
-                 }
-             }];
-
-    [ticket setUploadProgressBlock:^(GTLServiceTicket *ticket,
-                                     unsigned long long totalBytesWritten,
-                                     unsigned long long totalBytesExpectedToWrite) {
-//TODO Update Loading Indicator here, or notify loading delegate
-        [self.loader setProgress:((float)totalBytesWritten/(float)totalBytesExpectedToWrite)];
-        NSLog(@"Percent Uploaded %.2f", ((float)totalBytesWritten/(float)totalBytesExpectedToWrite) * 100);
-    }];*/
-//}
-
 @end

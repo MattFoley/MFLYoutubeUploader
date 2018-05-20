@@ -9,21 +9,31 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+
 #import "GTLRYouTube.h"
+#import "AppAuth.h"
+
 #ifdef CRAWL
 #import "MFLFillableTextLoader.h"
 #endif
 
 @interface MFLYoutubeUploader : NSObject
 
-@property (nonatomic, readonly) GTLRYouTubeService *youTubeService;
+/*! @brief The authorization flow session which receives the return URL from
+ \SFSafariViewController.
+ @discussion We need to store this in the app delegate as it's that delegate which receives the
+ incoming URL on UIApplicationDelegate.application:openURL:options:. This property will be
+ nil, except when an authorization flow is in progress.
+ */
+@property(nonatomic, strong, nullable) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
+
 
 /**
  *  Singleton, cause why not zoidberg?
  *
  *  @return Just use this for now, it'll be easier.
  */
-+ (MFLYoutubeUploader *)sharedInstance;
++ (MFLYoutubeUploader *_Nonnull)sharedInstance;
 
 /**
  *  Use this method to upload a video file to YouTube
@@ -35,14 +45,12 @@
  *  @param vc          View Controller on which to display authorization flow
  *  @param completion  Called when YouTube upload completes.
  */
-- (void)uploadURLToYoutube:(NSURL *)fileURL
-                 withTitle:(NSString *)title
-               description:(NSString *)description
-                      tags:(NSArray *)tags
-            viewController:(UIViewController *)vc
-#ifdef CRAWL
-                    loader:(MFLFillableTextLoader *)loader
-#endif
-                completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion;
+- (void)uploadURLToYoutube:(NSURL *_Nonnull)fileURL
+                 withTitle:(NSString *_Nonnull)title
+               description:(NSString *_Nullable)description
+                      tags:(NSArray *_Nullable)tags
+            viewController:(UIViewController *_Nonnull)vc
+                  progress:(void (^_Nullable) (unsigned long long numberOfBytesRead, unsigned long long dataLength))progress
+                completion:(void (^_Nonnull)(BOOL success, NSString * _Nonnull videoId, NSError * _Nonnull err))completion;
 
 @end
