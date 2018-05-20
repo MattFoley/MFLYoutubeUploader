@@ -30,7 +30,7 @@
                                                 description:@"This is only a test."
                                                        tags:nil
                                              viewController:self
-                                                 completion:^(BOOL success, NSError *err) {
+                                                 completion:^(BOOL success, NSString *videoId, NSError *err) {
                                                      if (success) {
                                                          [[[UIAlertView alloc] initWithTitle:@"Yissssss!"
                                                                                      message:@"It worked!"

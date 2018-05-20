@@ -8,10 +8,17 @@
 
 #import "MFLYoutubeUploader.h"
 #import "MFLYoutubeConstants.h"
-#import "GTMOAuth2ViewControllerTouch.h"
-#import "GTLYouTube.h"
+
+#import "GTLR/AppAuth.h"
+#import "GTLR/GTLRUtilities.h"
+#import "GTLR/GTMSessionUploadFetcher.h"
+#import "GTLR/GTMSessionFetcherLogging.h"
+#import "GTLR/GTMAppAuth.h"
+
+#ifdef CRAWL
 #import "CrawlMessagesKeyboardView.h"
 #import "UIAlertController+Blocks.h"
+#endif
 
 @interface MFLYoutubeUploader ()
 
@@ -19,7 +26,9 @@
 @property NSString *videoDescription;
 @property NSArray *tags;
 @property NSURL *url;
+#ifdef CRAWL
 @property MFLFillableTextLoader *loader;
+#endif
 
 @property (nonatomic, copy) void (^completion)(BOOL success, NSString *videoId, NSError *err);
 
@@ -43,10 +52,10 @@
     self = [super init];
 
     if (self) {
-        _youtubeService = [[GTLServiceYouTube alloc] init];
+       /* _youtubeService = [[GTLServiceYouTube alloc] init];
         _youtubeService.authorizer = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:kYTKeychainItemName
                                                                                            clientID:kYTClientID
-                                                                                       clientSecret:kYTClientSecret];
+                                                                                       clientSecret:kYTClientSecret];*/
     }
 
     return self;
@@ -57,7 +66,9 @@
                description:(NSString *)description
                       tags:(NSArray *)tags
             viewController:(UIViewController *)vc
+#ifdef CRAWL
                     loader:(MFLFillableTextLoader *)loader
+#endif
                 completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion
 {
     self.title = title;
@@ -65,15 +76,17 @@
     self.tags = tags;
     self.completion = completion;
     self.url = fileURL;
+#ifdef CRAWL
     self.loader = loader;
+#endif
     
     if (![self isAuthorized]) {
-        [vc presentViewController:[self createAuthController] animated:YES completion:nil];
+        //[vc presentViewController:[self createAuthController] animated:YES completion:nil];
     } else {
         [self beginUploadingToYoutube];
     }
 
-
+#ifdef CRAWL
     NSMutableParagraphStyle *para = [NSMutableParagraphStyle new];
     [para setAlignment:NSTextAlignmentCenter];
     NSAttributedString *details = [[NSAttributedString alloc] initWithString:@"Hyperdrives calibrating to YouTube..."
@@ -83,14 +96,17 @@
     [self.loader setDetailText:details];
 
     [self.loader setProgress:0];
+#endif
 }
 
 - (BOOL)isAuthorized
 {
-    return [((GTMOAuth2Authentication *)self.youtubeService.authorizer) canAuthorize];
+    return true;
+    //return [((GTMOAuth2Authentication *)self.youtubeService.authorizer) canAuthorize];
 }
 
 
+/*
 - (GTMOAuth2ViewControllerTouch *)createAuthController
 {
     GTMOAuth2ViewControllerTouch *authController;
@@ -103,7 +119,9 @@
                                                         finishedSelector:@selector(authViewController:finishedWithAuth:error:)];
     return authController;
 }
+ */
 
+/*
 - (void)authViewController:(GTMOAuth2ViewControllerTouch *)viewController
           finishedWithAuth:(GTMOAuth2Authentication *)authResult
                      error:(NSError *)error {
@@ -117,6 +135,8 @@
 #else
             UIViewController *topController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
 #endif
+            
+#ifdef CRAWL
             [UIAlertController showAlertInViewController:topController
                                                withTitle:@"Error"
                                                  message:error.localizedDescription
@@ -124,7 +144,7 @@
                                   destructiveButtonTitle:nil
                                        otherButtonTitles:nil
                                                 tapBlock:nil];
-
+#endif
             self.youtubeService.authorizer = nil;
             self.completion(NO, nil, error);
         } else {
@@ -133,10 +153,28 @@
         }
     }];
 }
+*/
 
 - (void)beginUploadingToYoutube
 {
-    GTLYouTubeVideoStatus *status = [GTLYouTubeVideoStatus alloc];
+    
+    // Collect the metadata for the upload from the user interface.
+    
+    // Status.
+    GTLRYouTube_VideoStatus *status = [GTLRYouTube_VideoStatus object];
+    status.privacyStatus = @"public";
+    
+    // Snippet.
+    GTLRYouTube_VideoSnippet *snippet = [GTLRYouTube_VideoSnippet object];
+    snippet.title = self.title;
+    snippet.descriptionProperty = self.videoDescription;
+    snippet.tags = self.tags;
+    
+    GTLRYouTube_Video *video = [GTLRYouTube_Video object];
+    video.status = status;
+    video.snippet = snippet;
+    
+    /*GTLYouTubeVideoStatus *status = [GTLYouTubeVideoStatus alloc];
     status.privacyStatus = @"public";
 
     GTLYouTubeVideoSnippet *snippet = [GTLYouTubeVideoSnippet alloc];
@@ -190,7 +228,7 @@
 //TODO Update Loading Indicator here, or notify loading delegate
         [self.loader setProgress:((float)totalBytesWritten/(float)totalBytesExpectedToWrite)];
         NSLog(@"Percent Uploaded %.2f", ((float)totalBytesWritten/(float)totalBytesExpectedToWrite) * 100);
-    }];
+    }];*/
 }
 
 @end

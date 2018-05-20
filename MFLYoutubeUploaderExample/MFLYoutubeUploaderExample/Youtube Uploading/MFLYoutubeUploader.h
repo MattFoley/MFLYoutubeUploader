@@ -9,12 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
-#import "GTLYouTube.h"
+//#import "GTLYouTube.h"
+#ifdef CRAWL
 #import "MFLFillableTextLoader.h"
+#endif
 
 @interface MFLYoutubeUploader : NSObject
 
-@property (nonatomic, retain) GTLServiceYouTube *youtubeService;
+//@property (nonatomic, retain) GTLServiceYouTube *youtubeService;
 
 /**
  *  Singleton, cause why not zoidberg?
@@ -38,7 +40,9 @@
                description:(NSString *)description
                       tags:(NSArray *)tags
             viewController:(UIViewController *)vc
+#ifdef CRAWL
                     loader:(MFLFillableTextLoader *)loader
+#endif
                 completion:(void (^)(BOOL success, NSString *videoId, NSError *err))completion;
 
 @end
