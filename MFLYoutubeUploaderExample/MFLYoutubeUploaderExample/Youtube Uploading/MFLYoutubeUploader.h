@@ -9,14 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
-//#import "GTLYouTube.h"
+#import "GTLRYouTube.h"
 #ifdef CRAWL
 #import "MFLFillableTextLoader.h"
 #endif
 
 @interface MFLYoutubeUploader : NSObject
 
-//@property (nonatomic, retain) GTLServiceYouTube *youtubeService;
+@property (nonatomic, readonly) GTLRYouTubeService *youTubeService;
 
 /**
  *  Singleton, cause why not zoidberg?

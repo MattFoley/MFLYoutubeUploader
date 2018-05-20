@@ -1,0 +1,7 @@
+platform :ios, '9.0'
+
+target 'MFLYoutubeUploaderExample' do
+  use_frameworks!
+  pod 'GoogleAPIClientForREST/YouTube', '~> 1.3.4'
+  pod 'GTMAppAuth'
+end

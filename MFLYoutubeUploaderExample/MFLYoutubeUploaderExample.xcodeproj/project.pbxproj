@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6BBF3C8320B125CE0071B87C /* GTLR.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBF3C7320B125B00071B87C /* GTLR.framework */; };
-		6BBF3C9F20B137530071B87C /* GTLRYouTubeQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BBF3C9120B137530071B87C /* GTLRYouTubeQuery.m */; };
-		6BBF3CA020B137530071B87C /* GTLRYouTubeService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BBF3C9420B137530071B87C /* GTLRYouTubeService.m */; };
-		6BBF3CA120B137530071B87C /* GTLRYouTubeObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BBF3C9620B137530071B87C /* GTLRYouTubeObjects.m */; };
+		6BBF3CE720B148580071B87C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBF3CDF20B148580071B87C /* Security.framework */; };
+		6BBF3CE920B148600071B87C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBF3CE820B148600071B87C /* SystemConfiguration.framework */; };
 		D96F99BB1B18987200715EEC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D96F99BA1B18987200715EEC /* main.m */; };
 		D96F99BE1B18987200715EEC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D96F99BD1B18987200715EEC /* AppDelegate.m */; };
 		D96F99C11B18987200715EEC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D96F99C01B18987200715EEC /* ViewController.m */; };
@@ -21,72 +19,10 @@
 		D96F99E41B18992300715EEC /* MFLYoutubeUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = D96F99E01B18992300715EEC /* MFLYoutubeUploader.m */; };
 		D96F99E51B18992300715EEC /* MFLYoutubeConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = D96F99E31B18992300715EEC /* MFLYoutubeConstants.m */; };
 		D96F99EF1B189D8500715EEC /* sample_iTunes.mov in Resources */ = {isa = PBXBuildFile; fileRef = D96F99EE1B189D8500715EEC /* sample_iTunes.mov */; };
+		F8B88D38CD15D8BC04AFD918 /* Pods_MFLYoutubeUploaderExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0266EB4C5F57F12CCD68A84F /* Pods_MFLYoutubeUploaderExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6BBF3C7020B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4F38F6A60B66E91D00B24B81;
-			remoteInfo = GTLROSXCore;
-		};
-		6BBF3C7220B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F4469DB41C40229D00BCFAA1;
-			remoteInfo = GTLRiOSCore;
-		};
-		6BBF3C7420B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F4A8723C1DAD1AA400D69E09;
-			remoteInfo = GTLRtvOSCore;
-		};
-		6BBF3C7620B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F4B18FE41F10035400E55018;
-			remoteInfo = GTLRwatchOSCore;
-		};
-		6BBF3C7820B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4F12027D11A4CA2F00BEB470;
-			remoteInfo = GTLROSXUnitTests;
-		};
-		6BBF3C7A20B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F4368F721B8233BF00E17643;
-			remoteInfo = GTLRiOSUnitTests;
-		};
-		6BBF3C7C20B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F4A8727D1DAD1FA000D69E09;
-			remoteInfo = GTLRtvOSUnitTests;
-		};
-		6BBF3C7E20B125B00071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4F1AD9020B71603F00DC0485;
-			remoteInfo = OSXDevTool;
-		};
-		6BBF3C8020B125C80071B87C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F4469D791C40229D00BCFAA1;
-			remoteInfo = GTLRiOSCore;
-		};
 		D96F99CF1B18987200715EEC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D96F99AD1B18987200715EEC /* Project object */;
@@ -97,14 +33,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTLRCore.xcodeproj; path = "../../../lib/google-api-objectivec-client-for-rest/Source/GTLRCore.xcodeproj"; sourceTree = "<group>"; };
-		6BBF3C9120B137530071B87C /* GTLRYouTubeQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTLRYouTubeQuery.m; sourceTree = "<group>"; };
-		6BBF3C9220B137530071B87C /* GTLRYouTubeService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTLRYouTubeService.h; sourceTree = "<group>"; };
-		6BBF3C9320B137530071B87C /* GTLRYouTubeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTLRYouTubeObjects.h; sourceTree = "<group>"; };
-		6BBF3C9420B137530071B87C /* GTLRYouTubeService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTLRYouTubeService.m; sourceTree = "<group>"; };
-		6BBF3C9520B137530071B87C /* GTLRYouTubeQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTLRYouTubeQuery.h; sourceTree = "<group>"; };
-		6BBF3C9620B137530071B87C /* GTLRYouTubeObjects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTLRYouTubeObjects.m; sourceTree = "<group>"; };
-		6BBF3C9720B137530071B87C /* GTLRYouTube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTLRYouTube.h; sourceTree = "<group>"; };
+		0266EB4C5F57F12CCD68A84F /* Pods_MFLYoutubeUploaderExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MFLYoutubeUploaderExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E2E826DA031A289DFD8DFAD /* Pods-MFLYoutubeUploaderExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MFLYoutubeUploaderExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MFLYoutubeUploaderExample/Pods-MFLYoutubeUploaderExample.debug.xcconfig"; sourceTree = "<group>"; };
+		5FFEB3A062E8F49C2A256DDC /* Pods-MFLYoutubeUploaderExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MFLYoutubeUploaderExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MFLYoutubeUploaderExample/Pods-MFLYoutubeUploaderExample.release.xcconfig"; sourceTree = "<group>"; };
+		6BBF3CDF20B148580071B87C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		6BBF3CE820B148600071B87C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D96F99B51B18987200715EEC /* MFLYoutubeUploaderExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MFLYoutubeUploaderExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D96F99B91B18987200715EEC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D96F99BA1B18987200715EEC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -130,7 +63,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6BBF3C8320B125CE0071B87C /* GTLR.framework in Frameworks */,
+				6BBF3CE920B148600071B87C /* SystemConfiguration.framework in Frameworks */,
+				6BBF3CE720B148580071B87C /* Security.framework in Frameworks */,
+				F8B88D38CD15D8BC04AFD918 /* Pods_MFLYoutubeUploaderExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,41 +79,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6BBF3C6620B125AF0071B87C /* Products */ = {
+		2092C2EA7A7ABF99714B6B80 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6BBF3C7120B125B00071B87C /* GTLR.framework */,
-				6BBF3C7320B125B00071B87C /* GTLR.framework */,
-				6BBF3C7520B125B00071B87C /* GTLR.framework */,
-				6BBF3C7720B125B00071B87C /* GTLRwatchOSCore.framework */,
-				6BBF3C7920B125B00071B87C /* GTLROSXUnitTests.xctest */,
-				6BBF3C7B20B125B00071B87C /* GTLRiOSUnitTests.xctest */,
-				6BBF3C7D20B125B00071B87C /* GTLRtvOSUnitTests.xctest */,
-				6BBF3C7F20B125B00071B87C /* OSXDevTool */,
+				0E2E826DA031A289DFD8DFAD /* Pods-MFLYoutubeUploaderExample.debug.xcconfig */,
+				5FFEB3A062E8F49C2A256DDC /* Pods-MFLYoutubeUploaderExample.release.xcconfig */,
 			);
-			name = Products;
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		6BBF3C8220B125CE0071B87C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6BBF3CE820B148600071B87C /* SystemConfiguration.framework */,
+				6BBF3CDF20B148580071B87C /* Security.framework */,
+				0266EB4C5F57F12CCD68A84F /* Pods_MFLYoutubeUploaderExample.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		6BBF3C9020B137530071B87C /* YouTube */ = {
-			isa = PBXGroup;
-			children = (
-				6BBF3C9120B137530071B87C /* GTLRYouTubeQuery.m */,
-				6BBF3C9220B137530071B87C /* GTLRYouTubeService.h */,
-				6BBF3C9320B137530071B87C /* GTLRYouTubeObjects.h */,
-				6BBF3C9420B137530071B87C /* GTLRYouTubeService.m */,
-				6BBF3C9520B137530071B87C /* GTLRYouTubeQuery.h */,
-				6BBF3C9620B137530071B87C /* GTLRYouTubeObjects.m */,
-				6BBF3C9720B137530071B87C /* GTLRYouTube.h */,
-			);
-			name = YouTube;
-			path = "../../../lib/google-api-objectivec-client-for-rest/Source/GeneratedServices/YouTube";
 			sourceTree = "<group>";
 		};
 		D96F99AC1B18987200715EEC = {
@@ -188,6 +105,7 @@
 				D96F99D11B18987200715EEC /* MFLYoutubeUploaderExampleTests */,
 				D96F99B61B18987200715EEC /* Products */,
 				6BBF3C8220B125CE0071B87C /* Frameworks */,
+				2092C2EA7A7ABF99714B6B80 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -245,8 +163,6 @@
 		D96F99DE1B18992300715EEC /* Youtube Uploading */ = {
 			isa = PBXGroup;
 			children = (
-				6BBF3C9020B137530071B87C /* YouTube */,
-				6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */,
 				D96F99EE1B189D8500715EEC /* sample_iTunes.mov */,
 				D96F99DF1B18992300715EEC /* MFLYoutubeUploader.h */,
 				D96F99E01B18992300715EEC /* MFLYoutubeUploader.m */,
@@ -271,14 +187,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D96F99D81B18987200715EEC /* Build configuration list for PBXNativeTarget "MFLYoutubeUploaderExample" */;
 			buildPhases = (
+				0A832E5251991294ECDED170 /* [CP] Check Pods Manifest.lock */,
 				D96F99B11B18987200715EEC /* Sources */,
 				D96F99B21B18987200715EEC /* Frameworks */,
 				D96F99B31B18987200715EEC /* Resources */,
+				5FCA692405041D354B787A88 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				6BBF3C8120B125C80071B87C /* PBXTargetDependency */,
 			);
 			name = MFLYoutubeUploaderExample;
 			productName = MFLYoutubeUploaderExample;
@@ -332,12 +249,6 @@
 			mainGroup = D96F99AC1B18987200715EEC;
 			productRefGroup = D96F99B61B18987200715EEC /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 6BBF3C6620B125AF0071B87C /* Products */;
-					ProjectRef = 6BBF3C6520B125AF0071B87C /* GTLRCore.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				D96F99B41B18987200715EEC /* MFLYoutubeUploaderExample */,
@@ -345,65 +256,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		6BBF3C7120B125B00071B87C /* GTLR.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GTLR.framework;
-			remoteRef = 6BBF3C7020B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7320B125B00071B87C /* GTLR.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GTLR.framework;
-			remoteRef = 6BBF3C7220B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7520B125B00071B87C /* GTLR.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GTLR.framework;
-			remoteRef = 6BBF3C7420B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7720B125B00071B87C /* GTLRwatchOSCore.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GTLRwatchOSCore.framework;
-			remoteRef = 6BBF3C7620B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7920B125B00071B87C /* GTLROSXUnitTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = GTLROSXUnitTests.xctest;
-			remoteRef = 6BBF3C7820B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7B20B125B00071B87C /* GTLRiOSUnitTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = GTLRiOSUnitTests.xctest;
-			remoteRef = 6BBF3C7A20B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7D20B125B00071B87C /* GTLRtvOSUnitTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = GTLRtvOSUnitTests.xctest;
-			remoteRef = 6BBF3C7C20B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6BBF3C7F20B125B00071B87C /* OSXDevTool */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = OSXDevTool;
-			remoteRef = 6BBF3C7E20B125B00071B87C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D96F99B31B18987200715EEC /* Resources */ = {
@@ -426,19 +278,61 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0A832E5251991294ECDED170 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MFLYoutubeUploaderExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5FCA692405041D354B787A88 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-MFLYoutubeUploaderExample/Pods-MFLYoutubeUploaderExample-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AppAuth/AppAuth.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMAppAuth/GTMAppAuth.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleAPIClientForREST/GoogleAPIClientForREST.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AppAuth.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMAppAuth.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleAPIClientForREST.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MFLYoutubeUploaderExample/Pods-MFLYoutubeUploaderExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		D96F99B11B18987200715EEC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D96F99C11B18987200715EEC /* ViewController.m in Sources */,
-				6BBF3CA020B137530071B87C /* GTLRYouTubeService.m in Sources */,
-				6BBF3C9F20B137530071B87C /* GTLRYouTubeQuery.m in Sources */,
 				D96F99BE1B18987200715EEC /* AppDelegate.m in Sources */,
 				D96F99BB1B18987200715EEC /* main.m in Sources */,
 				D96F99E51B18992300715EEC /* MFLYoutubeConstants.m in Sources */,
 				D96F99E41B18992300715EEC /* MFLYoutubeUploader.m in Sources */,
-				6BBF3CA120B137530071B87C /* GTLRYouTubeObjects.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,11 +347,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6BBF3C8120B125C80071B87C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GTLRiOSCore;
-			targetProxy = 6BBF3C8020B125C80071B87C /* PBXContainerItemProxy */;
-		};
 		D96F99D01B18987200715EEC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D96F99B41B18987200715EEC /* MFLYoutubeUploaderExample */;
@@ -569,12 +458,12 @@
 		};
 		D96F99D91B18987200715EEC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0E2E826DA031A289DFD8DFAD /* Pods-MFLYoutubeUploaderExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-					GTMAPPAUTH_USER_IMPORTS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"\"${SOURCE_ROOT}/../lib/google-api-objectivec-client-for-rest/Deps/GTMAppAuth/Source\"/**",
@@ -591,9 +480,10 @@
 		};
 		D96F99DA1B18987200715EEC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5FFEB3A062E8F49C2A256DDC /* Pods-MFLYoutubeUploaderExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GCC_PREPROCESSOR_DEFINITIONS = GTMAPPAUTH_USER_IMPORTS;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					"\"${SOURCE_ROOT}/../lib/google-api-objectivec-client-for-rest/Deps/GTMAppAuth/Source\"/**",
 					"\"${SOURCE_ROOT}/../lib/google-api-objectivec-client-for-rest/Source\"/**",

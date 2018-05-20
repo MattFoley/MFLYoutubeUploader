@@ -8,13 +8,7 @@
 
 #import "MFLYoutubeUploader.h"
 #import "MFLYoutubeConstants.h"
-
-#import "GTLR/AppAuth.h"
-#import "GTLR/GTLRUtilities.h"
-#import "GTLR/GTMSessionUploadFetcher.h"
-#import "GTLR/GTMSessionFetcherLogging.h"
-#import "GTLR/GTMAppAuth.h"
-
+#import "GTLRYouTube.h"
 #ifdef CRAWL
 #import "CrawlMessagesKeyboardView.h"
 #import "UIAlertController+Blocks.h"
@@ -52,8 +46,8 @@
     self = [super init];
 
     if (self) {
-       /* _youtubeService = [[GTLServiceYouTube alloc] init];
-        _youtubeService.authorizer = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:kYTKeychainItemName
+       
+       /*  _youtubeService.authorizer = [GTMOAuth2ViewControllerTouch authForGoogleFromKeychainForName:kYTKeychainItemName
                                                                                            clientID:kYTClientID
                                                                                        clientSecret:kYTClientSecret];*/
     }
@@ -81,6 +75,7 @@
 #endif
     
     if (![self isAuthorized]) {
+        //Login first
         //[vc presentViewController:[self createAuthController] animated:YES completion:nil];
     } else {
         [self beginUploadingToYoutube];
@@ -102,7 +97,27 @@
 - (BOOL)isAuthorized
 {
     return true;
+    // check login with new API
     //return [((GTMOAuth2Authentication *)self.youtubeService.authorizer) canAuthorize];
+}
+
+- (GTLRYouTubeService *)youTubeService
+{
+    static GTLRYouTubeService *service;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        service = [[GTLRYouTubeService alloc] init];
+        
+        // Have the service object set tickets to fetch consecutive pages
+        // of the feed so we do not need to manually fetch them.
+        service.shouldFetchNextPages = YES;
+        
+        // Have the service object set tickets to retry temporary error conditions
+        // automatically.
+        service.retryEnabled = YES;
+    });
+    return service;
 }
 
 
@@ -174,17 +189,70 @@
     video.status = status;
     video.snippet = snippet;
     
-    /*GTLYouTubeVideoStatus *status = [GTLYouTubeVideoStatus alloc];
-    status.privacyStatus = @"public";
+    [self uploadVideoWithVideoObject:video
+             resumeUploadLocationURL:nil];
+    
+}
 
-    GTLYouTubeVideoSnippet *snippet = [GTLYouTubeVideoSnippet alloc];
-    snippet.title = self.title;
-    snippet.descriptionProperty = self.videoDescription;
-    snippet.tags = self.tags;
-
-    GTLYouTubeVideo *video = [GTLYouTubeVideo object];
-    video.snippet = snippet;
-    video.status = status;
+- (void)uploadVideoWithVideoObject:(GTLRYouTube_Video *)video
+           resumeUploadLocationURL:(NSURL *)locationURL {
+    NSURL *fileToUploadURL = self.url;
+    NSError *fileError;
+    if (![fileToUploadURL checkPromisedItemIsReachableAndReturnError:&fileError]) {
+        self.completion(NO, nil, fileError);
+        return;
+    }
+    
+    // Get a file handle for the upload data.
+    NSString *filename = [fileToUploadURL lastPathComponent];
+    GTLRUploadParameters *uploadParameters =
+    [GTLRUploadParameters uploadParametersWithFileURL:fileToUploadURL
+                                             MIMEType:@"video/*"];
+    uploadParameters.uploadLocationURL = locationURL;
+    
+    GTLRYouTubeQuery_VideosInsert *query =
+    [GTLRYouTubeQuery_VideosInsert queryWithObject:video
+                                              part:@"snippet,status"
+                                  uploadParameters:uploadParameters];
+    
+    query.executionParameters.uploadProgressBlock = ^(GTLRServiceTicket *ticket,
+                                                      unsigned long long numberOfBytesRead,
+                                                      unsigned long long dataLength) {
+#ifdef CRAWL
+        [self.loader setProgress:((float)numberOfBytesRead/(float)dataLength)];
+#endif
+        NSLog(@"Percent Uploaded %.2f", ((float)numberOfBytesRead/(float)dataLength) * 100);
+    };
+    
+    GTLRYouTubeService *service = self.youTubeService;
+   /* _uploadFileTicket = [service executeQuery:query
+                            completionHandler:^(GTLRServiceTicket *callbackTicket,
+                                                GTLRYouTube_Video *uploadedVideo,
+                                                NSError *callbackError) {
+                                // Callback
+                                _uploadFileTicket = nil;
+                                if (callbackError == nil) {
+                                    [self displayAlert:@"Uploaded"
+                                                format:@"Uploaded file \"%@\"",
+                                     uploadedVideo.snippet.title];
+                                    
+                                    if (_playlistPopup.selectedTag == kUploadsTag) {
+                                        // Refresh the displayed uploads playlist.
+                                        [self fetchSelectedPlaylist];
+                                    }
+                                } else {
+                                    [self displayAlert:@"Upload Failed"
+                                                format:@"%@", callbackError];
+                                }
+                                
+                                _uploadProgressIndicator.doubleValue = 0.0;
+                                _uploadLocationURL = nil;
+                                [self updateUI];
+                            }];
+    
+    [self updateUI];*/
+}
+    /*
 
 //My original project worked fine with FileURL, but building this example project I found "GTL_USE_SESSION_FETCHER" was set to 0 for the current build of Google Dev Library.
 #if GTL_USE_SESSION_FETCHER
@@ -229,6 +297,6 @@
         [self.loader setProgress:((float)totalBytesWritten/(float)totalBytesExpectedToWrite)];
         NSLog(@"Percent Uploaded %.2f", ((float)totalBytesWritten/(float)totalBytesExpectedToWrite) * 100);
     }];*/
-}
+//}
 
 @end
