@@ -109,10 +109,19 @@
                      error:(NSError *)error {
     [viewController dismissViewControllerAnimated:YES completion:^{
         if (error) {
+#ifdef SW_MESSAGES
             UIViewController *topController = [CrawlMessagesKeyboardView rootController];
             while (topController.presentedViewController) {
                 topController = topController.presentedViewController;
             }
+#else
+            [[[UIAlertView alloc] initWithTitle:@"Error"
+                                        message:error.localizedDescription
+                                       delegate:nil
+                              cancelButtonTitle:@"Okay"
+                              otherButtonTitles:nil] show];
+
+#endif
 
             [UIAlertController showAlertInViewController:topController
                                                withTitle:@"Error"
