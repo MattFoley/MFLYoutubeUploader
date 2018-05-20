@@ -1,3 +1,0 @@
-[submodule "lib/google-api-objectivec-client-for-rest"]
-	path = lib/google-api-objectivec-client-for-rest
-	url = https://github.com/google/google-api-objectivec-client-for-rest.git
