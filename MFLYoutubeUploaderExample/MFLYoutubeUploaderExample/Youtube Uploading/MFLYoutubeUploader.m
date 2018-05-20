@@ -115,14 +115,8 @@
                 topController = topController.presentedViewController;
             }
 #else
-            [[[UIAlertView alloc] initWithTitle:@"Error"
-                                        message:error.localizedDescription
-                                       delegate:nil
-                              cancelButtonTitle:@"Okay"
-                              otherButtonTitles:nil] show];
-
+            UIViewController *topController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
 #endif
-
             [UIAlertController showAlertInViewController:topController
                                                withTitle:@"Error"
                                                  message:error.localizedDescription
