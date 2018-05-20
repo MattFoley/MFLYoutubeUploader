@@ -106,6 +106,8 @@ static NSString *const kIssuer = @"https://accounts.google.com";
     return self.youTubeService.authorizer.canAuthorize;
 }
 
+// AppAuth kit does not really support Extensions, it's using view controllers and app delegate/application references.
+// Proposed fix: https://github.com/openid/AppAuth-iOS/pull/224
 - (void)loginToYoutube
 {
     NSLog(@"Initiate login flow");
