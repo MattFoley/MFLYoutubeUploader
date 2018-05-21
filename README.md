@@ -1,13 +1,15 @@
-// TODO: These instructions are out of date. You now need to use a pod file to integrate the Google REST SDK, not SVN.
-// Updates to AppAuth also means you can't use this in extensions anymore.
+// **TODO**: These instructions are out of date. You now need to use a pod file to integrate the Google REST SDK, not SVN.
+// Updates to AppAuth also means you can't use this in extensions anymore. This should probably be turned into a real Cocoapod, for now integration is kind of hacky, because you have to update your podfile to match the Example project here to pull in dependencies, but still copy the source files over manually for MFLYoutubeUploader.
 
 # MFLYoutubeUploader
 I wanted an incredibly simple class for uploading videos to Youtube. If you're like me, and all you want to do is upload a video to YT then YTDL is going to seem monolithic. No need to stress, Youtube uploading is actually incredibly simple.
 
-####Account Setup and Integration
+### Account Setup and Integration
 First you'll need to get registered with Google in order to make uploads. [Start here](https://console.developers.google.com/project)
 
 (https://cloud.google.com/console#/flows/enableapi?apiid=youtube)
+
+
 
 1) Create an Application.
 
@@ -21,10 +23,11 @@ First you'll need to get registered with Google in order to make uploads. [Start
       - Create an OAuth Client ID, annd choose iOS Application.
       - Add in correct values from your project.
       - You should now be assigned a client id.
-      
+  **Note:** At this point, you can run the example project by running `pod install` in the root directory. It will walk you through signing in to Google and auto-uploading a video in the background on success. (requires CocoaPods setup locally)
+  
 2) Integrate the Google Client Library
 
-  - Using CocoaPods, create a PodFile for your project, and copy over the values in the Podfile of this repo.
+  - Using CocoaPods, create a PodFile for your project, and copy over the values in the Podfile of this repo. You need these dependencies to compile the MFLYoutubeUploader files.
 ```
   pod 'GoogleAPIClientForREST/YouTube', '~> 1.3.4'
   pod 'GTMAppAuth'
