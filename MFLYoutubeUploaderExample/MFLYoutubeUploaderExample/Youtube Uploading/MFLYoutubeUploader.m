@@ -7,7 +7,6 @@
 //
 
 #import "MFLYoutubeUploader.h"
-#import "MFLYoutubeConstants.h"
 
 #import "GTLRYouTube.h"
 #import "GTMSessionFetcher.h"
@@ -121,6 +120,7 @@ static NSString *const kIssuer = @"https://accounts.google.com";
          NSLog(@"Login flow completed");
          if (!configuration || error) {
              NSLog(@"Login flow failed, abort");
+             [GTMAppAuthFetcherAuthorization removeAuthorizationFromKeychainForName:kYTKeychainItemName];
              if (!error) {
                  error = [[NSError alloc] initWithDomain:NSCocoaErrorDomain
                                                     code:404
@@ -232,10 +232,16 @@ static NSString *const kIssuer = @"https://accounts.google.com";
                                     NSLog(@"Upload Success File ID: %@", uploadedVideo.identifier);
                                     self.completion(YES, uploadedVideo.identifier, nil);
                                 } else {
+                                    if (callbackError.code == 401) {
+                                        NSLog(@"Visit URL: https://developers.google.com/youtube/create-channel, User probably does not have a Youtube channel linked to this account: %@", callbackError);
+                                    }
+                                    self.youTubeService.authorizer = nil;
+                                    [GTMAppAuthFetcherAuthorization removeAuthorizationFromKeychainForName:kYTKeychainItemName];
                                     NSLog(@"An error occurred: %@", callbackError);
                                     self.completion(NO, nil, callbackError);
                                 }
                             }];
     
 }
+
 @end
