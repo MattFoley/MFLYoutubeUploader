@@ -14,17 +14,20 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AppAuth/AppAuth.h>
 #import <GTMAppAuth/GTMAppAuth.h>
+#import "UIAlertController+Blocks.h"
+#import <WebKit/WebKit.h>
 
 /*! The OIDC issuer from which the configuration will be discovered. (Always this I think?)
  */
 static NSString *const kIssuer = @"https://accounts.google.com";
 
-@interface MFLYoutubeUploader ()
+@interface MFLYoutubeUploader () <WKNavigationDelegate>
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *videoDescription;
 @property (nonatomic, strong) NSArray *tags;
 @property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) WKWebView *channelCreationWebView;
 @property (nonatomic, strong) GTLRYouTubeService *youTubeService;
 @property (nonatomic, weak) UIViewController *presentingVC;
 
@@ -233,6 +236,17 @@ static NSString *const kIssuer = @"https://accounts.google.com";
                                     self.completion(YES, uploadedVideo.identifier, nil);
                                 } else {
                                     if (callbackError.code == 401) {
+                                        [UIAlertController showAlertInViewController:self.presentingVC withTitle:@"Youtube Error"
+                                                                             message:@"Upload to Youtube failed, you may need to create a YouTube channel for yourself first. Tap \"Visit\" to be redirected."
+                                                                   cancelButtonTitle:@"Visit"
+                                                              destructiveButtonTitle:@"Cancel"
+                                                                   otherButtonTitles:nil
+                                                                            tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {
+                                                                                if (buttonIndex == 1) {
+                                                                                    [self beginChannelCreationFlow];
+                                                                                }
+                                            
+                                        }]
                                         NSLog(@"Visit URL: https://developers.google.com/youtube/create-channel, User probably does not have a Youtube channel linked to this account: %@", callbackError);
                                     }
                                     self.youTubeService.authorizer = nil;
@@ -243,5 +257,21 @@ static NSString *const kIssuer = @"https://accounts.google.com";
                             }];
     
 }
+
+- (void)beginChannelCreationFlow
+{
+    self.channelCreationWebView = [[WKWebView alloc] initWithFrame:self.presentingVC.view.bounds];
+    [self.presentingVC.view addSubview:self.channelCreationWebView];
+    [self.channelCreationWebView setNavigationDelegate:self];
+    [self.channelCreationWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://m.youtube.com/create_channel?chromeless=1&next=/channel_creation_done"]]];
+}
+
+- (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation
+{
+    
+}
+
+
+
 
 @end
