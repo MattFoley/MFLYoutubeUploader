@@ -15,20 +15,20 @@
 #import <AppAuth/AppAuth.h>
 #import <GTMAppAuth/GTMAppAuth.h>
 #import "UIAlertController+Blocks.h"
-#import <WebKit/WebKit.h>
+#import "STKWebKitViewController.h"
 
 /*! The OIDC issuer from which the configuration will be discovered. (Always this I think?)
  */
 static NSString *const kIssuer = @"https://accounts.google.com";
 
-@interface MFLYoutubeUploader () <WKNavigationDelegate>
+@interface MFLYoutubeUploader () <WKNavigationDelegate, STKWebKitDelegate>
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *videoDescription;
 @property (nonatomic, strong) NSArray *tags;
 @property (nonatomic, strong) NSURL *url;
-@property (nonatomic, strong) WKWebView *channelCreationWebView;
 @property (nonatomic, strong) GTLRYouTubeService *youTubeService;
+@property (nonatomic, strong) STKWebKitModalViewController *webkitBrowser;
 @property (nonatomic, weak) UIViewController *presentingVC;
 
 @property (nonatomic, copy) void (^completion)(BOOL success, NSString *videoId, NSError *err);
@@ -195,7 +195,8 @@ static NSString *const kIssuer = @"https://accounts.google.com";
 }
 
 - (void)uploadVideoWithVideoObject:(GTLRYouTube_Video *)video
-           resumeUploadLocationURL:(NSURL *)locationURL {
+           resumeUploadLocationURL:(NSURL *)locationURL
+{
     NSURL *fileToUploadURL = self.url;
     NSError *fileError;
     if (![fileToUploadURL checkPromisedItemIsReachableAndReturnError:&fileError]) {
@@ -237,41 +238,56 @@ static NSString *const kIssuer = @"https://accounts.google.com";
                                 } else {
                                     if (callbackError.code == 401) {
                                         [UIAlertController showAlertInViewController:self.presentingVC withTitle:@"Youtube Error"
-                                                                             message:@"Upload to Youtube failed, you may need to create a YouTube channel for yourself first. Tap \"Visit\" to be redirected."
-                                                                   cancelButtonTitle:@"Visit"
+                                                                             message:@"You may need to create a YouTube channel first. Tap \"Visit\" to create one."
+                                                                   cancelButtonTitle:nil
                                                               destructiveButtonTitle:@"Cancel"
-                                                                   otherButtonTitles:nil
-                                                                            tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {
-                                                                                if (buttonIndex == 1) {
+                                                                   otherButtonTitles:@[@"Visit"]
+                                                                            tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {                                                                                 if (buttonIndex == 2) {
                                                                                     [self beginChannelCreationFlow];
+                                                                                } else {
+                                                                                    [self endAndResetWithError:callbackError];
                                                                                 }
-                                            
-                                        }]
+                                                                            }];
                                         NSLog(@"Visit URL: https://developers.google.com/youtube/create-channel, User probably does not have a Youtube channel linked to this account: %@", callbackError);
+                                        return;
+                                    } else {
+                                        [self endAndResetWithError:callbackError];
                                     }
-                                    self.youTubeService.authorizer = nil;
-                                    [GTMAppAuthFetcherAuthorization removeAuthorizationFromKeychainForName:kYTKeychainItemName];
-                                    NSLog(@"An error occurred: %@", callbackError);
-                                    self.completion(NO, nil, callbackError);
                                 }
                             }];
     
 }
 
+- (void)endAndResetWithError:(NSError *)err
+{
+    self.youTubeService.authorizer = nil;
+    [GTMAppAuthFetcherAuthorization removeAuthorizationFromKeychainForName:kYTKeychainItemName];
+    NSLog(@"An error occurred: %@", err);
+    self.completion(NO, nil, err);
+}
+
 - (void)beginChannelCreationFlow
 {
-    self.channelCreationWebView = [[WKWebView alloc] initWithFrame:self.presentingVC.view.bounds];
-    [self.presentingVC.view addSubview:self.channelCreationWebView];
-    [self.channelCreationWebView setNavigationDelegate:self];
-    [self.channelCreationWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://m.youtube.com/create_channel?chromeless=1&next=/channel_creation_done"]]];
+    NSURL *url = [NSURL URLWithString:@"https://m.youtube.com/create_channel?chromeless=1&next=/channel_creation_done"];
+    self.webkitBrowser = [[STKWebKitModalViewController alloc] initWithURL:url];
+    self.webkitBrowser.webKitViewController.delegate = self;
+    [self.presentingVC presentViewController:self.webkitBrowser animated:YES completion:nil];
 }
 
 - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation
 {
-    
+    NSLog(@"loading page: %@", webView.URL.absoluteString);
+    if ([webView.URL.absoluteString containsString:@"channel_creation_done"]) {
+        [self.webkitBrowser dismissViewControllerAnimated:YES completion:^{
+            [self beginUploadingToYoutube];
+        }];
+    }
 }
 
-
+- (void)didDismissWebKitController
+{
+    [self endAndResetWithError:nil];
+}
 
 
 @end
